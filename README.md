@@ -1,8 +1,8 @@
 # Hutte Recipe - Remove Permission Assignments from Profiles
 
-The end of life of permissions on profiles has been announced by Salesforce (see https://admin.salesforce.com/blog/2023/permissions-updates-learn-moar-spring-23), and it is time to move all your permission management to permission sets. To avoid that redundant and outdated profile based permissions "pollute" your Git based source, we suggest to clean your profiles from permission assignments, every time you touch upon those in your work. Here comes a useful snippet that can be used as a Custom Button in Hutte. Alternatively, feel free to use it on your CI/CD to automate this step.
+> This recipe provides a Custom Button in Hutte to remove permissions from all Profiles in the force-app directory. Under the hood this uses Perl with Regular Expressions.
 
-This is inspired by https://github.com/amtrack/metadata-xml-tool
+The end of life of permissions on profiles has been announced by Salesforce (see https://admin.salesforce.com/blog/2023/permissions-updates-learn-moar-spring-23), and it is time to move all your permission management to permission sets. To avoid that redundant and outdated profile based permissions "pollute" your Git based source, we suggest to clean your profiles from permission assignments, every time you touch upon those in your work.
 
 ## Prerequisites
 
