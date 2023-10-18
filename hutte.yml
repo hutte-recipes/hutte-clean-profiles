@@ -1,0 +1,35 @@
+version: 1.0
+
+# Shell script to run when pushing the source code to the scratch orgs.
+# It's a great place to automate tasks like permission set assignments or data loading.
+push_script: |
+  sfdx --version
+  sfdx force:source:push -f --loglevel fatal 1>/dev/null -w 45
+
+custom_scripts:
+  # This scripts will be displayed on the scratch org's page
+  scratch_org:
+    'Clean Profiles':
+      description: Remove permission assignments from all Profiles in force-app
+      run: |
+        #!/usr/bin/env bash
+        set -eo pipefail
+        apk add perl
+
+        _cleanProfile() {
+          file="$0"
+          if [ ! -z "$file" ]; then
+            # https://admin.salesforce.com/blog/2023/permissions-updates-learn-moar-spring-23
+            for elementToRemove in classAccesses fieldPermissions objectPermissions pageAccesses tabVisibilities userPermissions; do
+              perl -0777 -p -i.pbak -e "s{(<${elementToRemove}>.*?</${elementToRemove}>)}{METADATA_XML_TOOL_LINE_TO_BE_REMOVED}gse" "${file}"
+              perl -n -i.pbak -e "print unless /METADATA_XML_TOOL_LINE_TO_BE_REMOVED/" "${file}"
+            done
+            rm -rf "${file}.pbak"
+          fi
+        }
+
+        export -f _cleanProfile
+        find force-app -name "*.profile-meta.xml" -exec bash -c "_cleanProfile" {} \;
+        git add .
+        git commit -m "Remove permission assignments from all Profiles included in your project"
+        git push
