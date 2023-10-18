@@ -28,19 +28,15 @@ custom_scripts:
         set -eo pipefail
         apk add perl
 
-        _cleanProfile() {
-          file="$0"
-          if [ ! -z "$file" ]; then
-            for elementToRemove in classAccesses fieldPermissions objectPermissions pageAccesses tabVisibilities userPermissions; do
-              perl -0777 -p -i.pbak -e "s{(<${elementToRemove}>.*?</${elementToRemove}>)}{METADATA_XML_TOOL_LINE_TO_BE_REMOVED}gse" "${file}"
-              perl -n -i.pbak -e "print unless /METADATA_XML_TOOL_LINE_TO_BE_REMOVED/" "${file}"
-            done
-            rm -rf "${file}.pbak"
-          fi
+        PERL_CODE="$(cat <<END
+        my @elementsToRemove = ('classAccesses', 'fieldPermissions', 'objectPermissions', 'pageAccesses', 'tabVisibilities', 'userPermissions');
+        for my \$elementToRemove (@elementsToRemove) {
+          s{(\s*<\$elementToRemove>.*?</\$elementToRemove>)}{}gse
         }
+        END
+        )"
 
-        export -f _cleanProfile
-        find force-app -name "*.profile-meta.xml" -exec bash -c "_cleanProfile" {} \;
+        find force-app -name "*.profile-meta.xml" -exec perl -0777 -p -i -e "${PERL_CODE}" {} +
         git add .
         git commit -m "Remove permission assignments from all Profiles included in your project"
         git push
