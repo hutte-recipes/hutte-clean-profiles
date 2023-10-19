@@ -1,8 +1,8 @@
 # Hutte Recipe - Remove Permission Assignments from Profiles
 
-The end of life of permissions on profiles has been announced by Salesforce (see https://admin.salesforce.com/blog/2023/permissions-updates-learn-moar-spring-23), and it is time to move all your permission management to permission sets. To avoid that redundant and outdated profile based permissions "pollute" your Git based source, we suggest to clean your profiles from permission assignments, every time you touch upon those in your work. Here comes a useful snippet that can be used as a Custom Button in Hutte. Alternatively, feel free to use it on your CI/CD to automate this step.
+> This recipe provides a Custom Button in Hutte to remove permissions from all Profiles in the force-app directory. Under the hood this uses Perl with Regular Expressions.
 
-This is inspired by https://github.com/amtrack/metadata-xml-tool
+The end of life of permissions on profiles has been announced by Salesforce (see https://admin.salesforce.com/blog/2023/permissions-updates-learn-moar-spring-23), and it is time to move all your permission management to permission sets. To avoid that redundant and outdated profile based permissions "pollute" your Git based source, we suggest to clean your profiles from permission assignments, every time you touch upon those in your work.
 
 ## Prerequisites
 
@@ -28,19 +28,15 @@ custom_scripts:
         set -eo pipefail
         apk add perl
 
-        _cleanProfile() {
-          file="$0"
-          if [ ! -z "$file" ]; then
-            for elementToRemove in classAccesses fieldPermissions objectPermissions pageAccesses tabVisibilities userPermissions; do
-              perl -0777 -p -i.pbak -e "s{(<${elementToRemove}>.*?</${elementToRemove}>)}{METADATA_XML_TOOL_LINE_TO_BE_REMOVED}gse" "${file}"
-              perl -n -i.pbak -e "print unless /METADATA_XML_TOOL_LINE_TO_BE_REMOVED/" "${file}"
-            done
-            rm -rf "${file}.pbak"
-          fi
+        PERL_CODE="$(cat <<END
+        my @elementsToRemove = ('classAccesses', 'fieldPermissions', 'objectPermissions', 'pageAccesses', 'tabVisibilities', 'userPermissions');
+        for my \$elementToRemove (@elementsToRemove) {
+          s|(\s*<\$elementToRemove>.*?</\$elementToRemove>)||gse
         }
+        END
+        )"
 
-        export -f _cleanProfile
-        find force-app -name "*.profile-meta.xml" -exec bash -c "_cleanProfile" {} \;
+        find force-app -name "*.profile-meta.xml" -exec perl -0777 -p -i -e "$PERL_CODE" {} +
         git add .
         git commit -m "Remove permission assignments from all Profiles included in your project"
         git push
@@ -51,4 +47,5 @@ custom_scripts:
 ### Step 2
 
 - Create a Scratch Org
+- Optionally "Pull Changes" with modified Profiles
 - Use the `Clean Profiles` custom button to remove Permission Assignments from all Profiles in your project
