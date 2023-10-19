@@ -31,12 +31,12 @@ custom_scripts:
         PERL_CODE="$(cat <<END
         my @elementsToRemove = ('classAccesses', 'fieldPermissions', 'objectPermissions', 'pageAccesses', 'tabVisibilities', 'userPermissions');
         for my \$elementToRemove (@elementsToRemove) {
-          s{(\s*<\$elementToRemove>.*?</\$elementToRemove>)}{}gse
+          s|(\s*<\$elementToRemove>.*?</\$elementToRemove>)||gse
         }
         END
         )"
 
-        find force-app -name "*.profile-meta.xml" -exec perl -0777 -p -i -e "${PERL_CODE}" {} +
+        find force-app -name "*.profile-meta.xml" -exec perl -0777 -p -i -e "$PERL_CODE" {} +
         git add .
         git commit -m "Remove permission assignments from all Profiles included in your project"
         git push
