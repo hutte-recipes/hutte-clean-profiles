@@ -47,4 +47,5 @@ custom_scripts:
 ### Step 2
 
 - Create a Scratch Org
+- Optionally "Pull Changes" with modified Profiles
 - Use the `Clean Profiles` custom button to remove Permission Assignments from all Profiles in your project
