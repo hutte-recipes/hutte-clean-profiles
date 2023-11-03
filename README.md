@@ -9,9 +9,7 @@ The end of life of permissions on profiles has been announced by Salesforce (see
 - a valid Sfdx Project
 - a `hutte.yml` file (e.g. the default one shown in the `CONFIGURATION` tab)
 
-## Steps
-
-### Step 1
+## Step 1: Add custom scripts
 
 - Edit the `hutte.yml` file in your default branch
 - Add the following lines to the `custom_scripts`
@@ -44,7 +42,7 @@ custom_scripts:
 
 \*Note: This custom button can also be added to sandboxes page in Hutte, for that, add the button to `sandbox` instead of `scratch_org`
 
-### Step 2
+## Step 2: Execute
 
 - Create a Scratch Org
 - Optionally "Pull Changes" with modified Profiles
