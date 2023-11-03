@@ -1,4 +1,4 @@
-# Remove Permission Assignments from Profiles
+# Hutte Recipe - Remove Permission Assignments from Profiles
 
 > This recipe provides a Custom Button in Hutte to remove permissions from all Profiles in the force-app directory. Under the hood this uses Perl with Regular Expressions.
 
