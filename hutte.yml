@@ -28,4 +28,4 @@ custom_scripts:
         find force-app -name "*.profile-meta.xml" -exec perl -0777 -p -i -e "$PERL_CODE" {} +
         git add .
         git commit -m "Remove permission assignments from all Profiles included in your project"
-        git push
+        git push origin "${HUTTE_GIT_SOURCE_BRANCH}"
